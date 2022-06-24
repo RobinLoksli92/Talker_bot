@@ -1,64 +1,59 @@
-import logging
+from telegram import Update
+from telegram.ext import Filters, Updater
+from telegram.ext import CommandHandler, CallbackContext, MessageHandler
 
 
-from telegram import __version__ as TG_VER
+states_db = {}
 
-try:
-    from telegram import __version_info__
-except ImportError:
-    __version_info__ = (0, 0, 0, 0, 0)  # type: ignore[assignment]
 
-if __version_info__ < (20, 0, 0, "alpha", 1):
-    raise RuntimeError(
-        f"This example is not compatible with your current PTB version {TG_VER}. To view the "
-        f"{TG_VER} version of this example, "
-        f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
+def start(update: Update, context: CallbackContext):
+    update.message.reply_text(
+        text = 'Приветствую'
     )
-from telegram import ForceReply, Update
-from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
-
-# Enable logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+    return 'ECHO'
 
 
-# Define a few command handlers. These usually take the two arguments update and
-# context.
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send a message when the command /start is issued."""
-    user = update.effective_user
-    await update.message.reply_html(
-        rf"Здравствуйте, {user.mention_html()}!",
-        reply_markup=ForceReply(selective=True),
+def echo(update: Update, context: CallbackContext):
+    update.message.reply_text(
+        text=update.message.text
     )
+    return
 
 
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send a message when the command /help is issued."""
-    await update.message.reply_text("Help!")
+def handle_user_reply(update: Update, context: CallbackContext):
+    if update.message:
+        user_reply = update.message.text
+        chat_id = update.message.chat_id
 
+    else:
+        return
+    
+    if user_reply == '/start':
+        user_state = 'START'
+    elif user_reply != '/start':
+        update.message.reply_text(
+            text='Для начала работы с ботом, напишите /start'
+        )
+    else:
+        user_state = states_db.get(chat_id)
+    
+    states_functions = {
+        'START': start,
+        'ECHO': echo
+    }
+    
+    state_handler = states_functions[user_state]
+    next_state = state_handler(update, context)
+    states_db.update({chat_id: next_state})
+    
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Echo the user message."""
-    await update.message.reply_text(update.message.text)
-
-
-def main() -> None:
-    """Start the bot."""
-    # Create the Application and pass it your bot's token.
-    application = Application.builder().token("5431788933:AAH2H7NBFbhRZki4r6-mn2diy4asvJLUtgI").build()
-
-    # on different commands - answer in Telegram
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_command))
-
-    # on non command i.e message - echo the message on Telegram
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-
-    # Run the bot until the user presses Ctrl-C
-    application.run_polling()
+def main():
+    # token = 
+    updater = Updater('5431788933:AAH2H7NBFbhRZki4r6-mn2diy4asvJLUtgI')
+    dispatcher = updater.dispatcher
+    dispatcher.add_handler(CommandHandler('start', handle_user_reply))
+    dispatcher.add_handler(MessageHandler(Filters.text, handle_user_reply ))
+    updater.start_polling()
 
 
 if __name__ == "__main__":

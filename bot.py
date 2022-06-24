@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Filters, Updater
 from telegram.ext import CommandHandler, CallbackContext, MessageHandler
@@ -48,8 +50,9 @@ def handle_user_reply(update: Update, context: CallbackContext):
     
 
 def main():
-    # token = 
-    updater = Updater('5431788933:AAH2H7NBFbhRZki4r6-mn2diy4asvJLUtgI')
+    load_dotenv()
+    telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+    updater = Updater(telegram_bot_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', handle_user_reply))
     dispatcher.add_handler(MessageHandler(Filters.text, handle_user_reply ))

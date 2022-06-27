@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import json
 import requests
 from telegram import Update
 from telegram.ext import Filters, Updater
@@ -10,7 +11,6 @@ from google.cloud import dialogflow
 
 states_db = {}
 project_id = 'sunlit-ace-354318'
-
 
 
 def start(update: Update, context: CallbackContext):
@@ -69,7 +69,6 @@ def handle_user_reply(update: Update, context: CallbackContext):
 def main():
     load_dotenv()
     telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
-    json_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
     updater = Updater(telegram_bot_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', handle_user_reply))

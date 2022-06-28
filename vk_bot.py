@@ -5,11 +5,17 @@ import random
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 
+from dialog_flow_detect_intents import detect_intents_text
+
+
+project_id = 'sunlit-ace-354318'
+
 
 def echo(event, vk_api):
+    text = detect_intents_text(project_id, session_id=event.user_id, texts=[event.text])
     vk_api.messages.send(
         user_id=event.user_id,
-        message=event.text,
+        message=text,
         random_id=random.randint(1,1000)
     )
 

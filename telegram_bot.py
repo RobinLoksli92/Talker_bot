@@ -1,18 +1,13 @@
 import os
 from dotenv import load_dotenv
-import json
-import requests
+
 from telegram import Update
 from telegram.ext import Filters, Updater
 from telegram.ext import CommandHandler, CallbackContext, MessageHandler
-
-from google.cloud import dialogflow
-
 from dialog_flow_detect_intents import detect_intents_text
 
 
 states_db = {}
-project_id = 'sunlit-ace-354318'
 
 
 def start(update: Update, context: CallbackContext):
@@ -23,10 +18,11 @@ def start(update: Update, context: CallbackContext):
 
 
 def echo(update: Update, context: CallbackContext):
+    project_id = os.getenv('DF_PROJECT_ID')
     chat_id = update.message.chat_id
-    text = detect_intents_text(project_id, session_id=chat_id, texts=[update.message.text])
+    response = detect_intents_text(project_id, session_id=chat_id, texts=[update.message.text])
     update.message.reply_text(
-        text=text
+        text=response.query_result.fulfillment_text
     )
     return 'ECHO'
 

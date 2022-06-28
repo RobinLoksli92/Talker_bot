@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 from google.cloud import dialogflow
 import json

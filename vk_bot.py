@@ -1,5 +1,4 @@
 import os
-from urllib import response
 from dotenv import load_dotenv
 import random
 
@@ -9,10 +8,8 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from dialog_flow_detect_intents import detect_intents_text
 
 
-project_id = 'sunlit-ace-354318'
-
-
 def echo(event, vk_api):
+    project_id = os.getenv('DF_PROJECT_ID')
     response = detect_intents_text(project_id, session_id=event.user_id, texts=[event.text])
     if not response.query_result.intent.is_fallback:
         vk_api.messages.send(

@@ -1,4 +1,5 @@
 import os
+from urllib import response
 from dotenv import load_dotenv
 import random
 
@@ -12,12 +13,13 @@ project_id = 'sunlit-ace-354318'
 
 
 def echo(event, vk_api):
-    text = detect_intents_text(project_id, session_id=event.user_id, texts=[event.text])
-    vk_api.messages.send(
-        user_id=event.user_id,
-        message=text,
-        random_id=random.randint(1,1000)
-    )
+    response = detect_intents_text(project_id, session_id=event.user_id, texts=[event.text])
+    if not response.query_result.intent.is_fallback:
+        vk_api.messages.send(
+            user_id=event.user_id,
+            message=response.query_result.fulfillment_text,
+            random_id=random.randint(1,1000)
+        )
 
 
 def main():

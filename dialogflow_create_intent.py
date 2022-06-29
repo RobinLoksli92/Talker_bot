@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from google.cloud import dialogflow
 import json
+import os
 
 
 def create_intent(project_id, display_name, training_phrases_parts, message_texts):
@@ -29,7 +30,7 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
 
 def main():
     load_dotenv()
-    project_id = 'sunlit-ace-354318'
+    project_id = os.getenv('DF_PROJECT_ID')
     with open('intents/phrases.json', encoding='utf-8') as file:
         intents = json.load(file)
     for display_name, intent in intents.items():

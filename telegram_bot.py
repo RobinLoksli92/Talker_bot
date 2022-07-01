@@ -21,7 +21,7 @@ def start(update: Update, context: CallbackContext):
     return reply_to_user
 
 
-def reply_to_user(update: Update, context: CallbackContext, project_id):
+def reply_to_user(update, context, project_id):
     chat_id = update.message.chat_id
     response = detect_intents_text(project_id, session_id=chat_id, texts=[update.message.text])
     update.message.reply_text(
@@ -46,8 +46,8 @@ def main():
     dispatcher.add_handler(MessageHandler(
         Filters.text,
         reply_to_user(
-            Update,
-            CallbackContext,
+            update=Update,
+            context=CallbackContext,
             project_id=project_id)))
     updater.start_polling()
 

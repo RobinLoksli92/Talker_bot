@@ -13,61 +13,37 @@ from logs_handler import TelegramLogsHandler
 
 logger = logging.getLogger('Logger')
 
-states_db = {}
-
 
 def start(update: Update, context: CallbackContext):
     update.message.reply_text(
         text = 'Приветствую'
     )
-    return 'ECHO'
+    return reply_to_user
 
 
-def reply_to_user(update: Update, context: CallbackContext):
-    project_id = os.getenv('DF_PROJECT_ID')
+def reply_to_user(update: Update, context: CallbackContext, project_id):
     chat_id = update.message.chat_id
     response = detect_intents_text(project_id, session_id=chat_id, texts=[update.message.text])
     update.message.reply_text(
         text=response.query_result.fulfillment_text
     )
-    return 'ECHO'
+    return reply_to_user
 
-
-def handle_user_reply(update: Update, context: CallbackContext):
-    if update.message:
-        user_reply = update.message.text
-        chat_id = update.message.chat_id
-
-    else:
-        return
-    
-    if user_reply == '/start':
-        user_state = 'START'
-    else:
-        user_state = 'ECHO'
-    
-    states_functions = {
-        'START': start,
-        'ECHO': reply_to_user
-    }
-    
-    state_handler = states_functions[user_state]
-    next_state = state_handler(update, context)
-    states_db.update({chat_id: next_state})
-    
 
 def main():
     load_dotenv()
     telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
     telegram_bot = telegram.Bot(telegram_bot_token)
+    logs_tg_id = os.getenv('USER_ID')
 
     logger.setLevel(logging.DEBUG)
-    logger.addHandler(TelegramLogsHandler(telegram_bot))
+    logger.addHandler(TelegramLogsHandler(telegram_bot, logs_tg_id))
 
+    project_id = os.getenv('DF_PROJECT_ID')
     updater = Updater(telegram_bot_token)
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler('start', handle_user_reply))
-    dispatcher.add_handler(MessageHandler(Filters.text, handle_user_reply))
+    dispatcher.add_handler(CommandHandler('start', start))
+    dispatcher.add_handler(MessageHandler(Filters.text, reply_to_user(project_id)))
     updater.start_polling()
 
 

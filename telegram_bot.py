@@ -1,6 +1,8 @@
+import functools
 import os
 from dotenv import load_dotenv
 import logging
+import functools
 
 import telegram
 from telegram import Update
@@ -21,7 +23,7 @@ def start(update: Update, context: CallbackContext):
     return reply_to_user
 
 
-def reply_to_user(update, context, project_id):
+def reply_to_user(update:Update, context:CallbackContext, project_id):
     chat_id = update.message.chat_id
     response = detect_intents_text(project_id, session_id=chat_id, texts=[update.message.text])
     update.message.reply_text(
@@ -43,12 +45,10 @@ def main():
     updater = Updater(telegram_bot_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))
+    reply = functools.partial(project_id=project_id)
     dispatcher.add_handler(MessageHandler(
         Filters.text,
-        reply_to_user(
-            update=Update,
-            context=CallbackContext,
-            project_id=project_id)))
+        reply))
     updater.start_polling()
 
 

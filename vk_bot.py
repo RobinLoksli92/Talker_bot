@@ -28,9 +28,10 @@ def main():
     load_dotenv()
     telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
     telegram_bot = telegram.Bot(telegram_bot_token)
+    logs_tg_id = os.getenv('USER_ID') 
 
     logger.setLevel(logging.DEBUG)
-    logger.addHandler(TelegramLogsHandler(telegram_bot))
+    logger.addHandler(TelegramLogsHandler(telegram_bot, logs_tg_id))
 
     project_id = os.getenv('DF_PROJECT_ID')
     vk_bot_token = os.getenv('VK_API_TOKEN')

@@ -23,7 +23,7 @@ def start(update: Update, context: CallbackContext):
     return 'ECHO'
 
 
-def echo(update: Update, context: CallbackContext):
+def reply_to_user(update: Update, context: CallbackContext):
     project_id = os.getenv('DF_PROJECT_ID')
     chat_id = update.message.chat_id
     response = detect_intents_text(project_id, session_id=chat_id, texts=[update.message.text])
@@ -48,7 +48,7 @@ def handle_user_reply(update: Update, context: CallbackContext):
     
     states_functions = {
         'START': start,
-        'ECHO': echo
+        'ECHO': reply_to_user
     }
     
     state_handler = states_functions[user_state]
@@ -67,7 +67,7 @@ def main():
     updater = Updater(telegram_bot_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', handle_user_reply))
-    dispatcher.add_handler(MessageHandler(Filters.text, handle_user_reply ))
+    dispatcher.add_handler(MessageHandler(Filters.text, handle_user_reply))
     updater.start_polling()
 
 

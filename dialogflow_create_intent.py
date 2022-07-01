@@ -1,3 +1,4 @@
+import argparse
 from dotenv import load_dotenv
 from google.cloud import dialogflow
 import json
@@ -31,7 +32,12 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
 def main():
     load_dotenv()
     project_id = os.getenv('DF_PROJECT_ID')
-    with open('intents/phrases.json', encoding='utf-8') as file:
+
+    parser = argparse.ArgumentParser(description='Добавление новых фраз')
+    parser.add_argument('filepath', help='Путь к файлу')
+    args = parser.parse_args()
+
+    with open(args.filepath, encoding='utf-8') as file:
         intents = json.load(file)
     for display_name, intent in intents.items():
         questions = intent['questions']

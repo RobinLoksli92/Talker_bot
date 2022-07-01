@@ -1,11 +1,17 @@
 import os
 from dotenv import load_dotenv
+import logging
 
+import telegram
 from telegram import Update
 from telegram.ext import Filters, Updater
 from telegram.ext import CommandHandler, CallbackContext, MessageHandler
-from dialog_flow_detect_intents import detect_intents_text
 
+from dialog_flow_detect_intents import detect_intents_text
+from logs_handler import TelegramLogsHandler
+
+
+logger = logging.getLogger('Logger')
 
 states_db = {}
 
@@ -53,6 +59,11 @@ def handle_user_reply(update: Update, context: CallbackContext):
 def main():
     load_dotenv()
     telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+    telegram_bot = telegram.Bot(telegram_bot_token)
+
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(TelegramLogsHandler(telegram_bot))
+
     updater = Updater(telegram_bot_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', handle_user_reply))

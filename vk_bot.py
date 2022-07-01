@@ -1,11 +1,17 @@
 import os
 from dotenv import load_dotenv
+import logging
 import random
 
+import telegram
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 
 from dialog_flow_detect_intents import detect_intents_text
+from logs_handler import TelegramLogsHandler
+
+
+logger = logging.getLogger('Logger')
 
 
 def echo(event, vk_api):
@@ -21,6 +27,12 @@ def echo(event, vk_api):
 
 def main():
     load_dotenv()
+    telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+    telegram_bot = telegram.Bot(telegram_bot_token)
+
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(TelegramLogsHandler(telegram_bot))
+
     vk_bot_token = os.getenv('VK_API_TOKEN')
     vk_session = vk.VkApi(token=vk_bot_token)
     vk_api = vk_session.get_api()

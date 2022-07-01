@@ -45,7 +45,7 @@ def main():
     updater = Updater(telegram_bot_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))
-    reply = functools.partial(project_id=project_id)
+    reply = functools.partial(reply_to_user, project_id=project_id)
     dispatcher.add_handler(MessageHandler(
         Filters.text,
         reply))

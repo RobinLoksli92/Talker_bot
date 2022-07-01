@@ -31,6 +31,8 @@ def handle_user_reply(update: Update, context: CallbackContext):
     if update.message:
         user_reply = update.message.text
         chat_id = update.message.chat_id
+        if  not states_functions[user_state]:
+            user_state = 'ECHO'
 
     else:
         return

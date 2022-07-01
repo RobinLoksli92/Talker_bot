@@ -43,7 +43,12 @@ def main():
     updater = Updater(telegram_bot_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))
-    dispatcher.add_handler(MessageHandler(Filters.text, reply_to_user(project_id=project_id)))
+    dispatcher.add_handler(MessageHandler(
+        Filters.text,
+        reply_to_user(
+            Update,
+            CallbackContext,
+            project_id=project_id)))
     updater.start_polling()
 
 
